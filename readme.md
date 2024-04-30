@@ -28,7 +28,7 @@ pip install -r requirements.txt
 
 ### Usage
 
-Try out the `notebooks` directory (requires ``matplotlib``) for training and inference examples.
+Try out the `notebooks` (requires ``matplotlib``) for training and inference examples.
 
 > **NOTE:**  Our model supports only increasing curves with values in $[0,1]$. If needed, please consider normalizing your curves to meet these constraints. See an example in ``notebooks/curve_normalization.ipynb``.
 
