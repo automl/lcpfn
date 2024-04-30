@@ -4,12 +4,15 @@ from typing import Optional
 import torch
 import torch.nn as nn
 from torch import Tensor
+import torch.nn.functional as F
 from torch.nn import Module, TransformerEncoder
 
 from lcpfn.layer import TransformerEncoderLayer, _get_activation_fn
 from lcpfn.utils import SeqBN, bool_mask_to_att_mask
 
-
+class GELU(nn.Module):
+    def forward(self, input: Tensor) -> Tensor:
+        return F.gelu(input)
 
 class TransformerModel(nn.Module):
     def __init__(self, encoder, n_out, ninp, nhead, nhid, nlayers, dropout=0.0, style_encoder=None, y_encoder=None,
@@ -26,7 +29,7 @@ class TransformerModel(nn.Module):
         self.encoder = encoder
         self.y_encoder = y_encoder
         self.pos_encoder = pos_encoder
-        self.decoder = decoder(ninp, nhid, n_out) if decoder is not None else nn.Sequential(nn.Linear(ninp, nhid), nn.GELU(), nn.Linear(nhid, n_out))
+        self.decoder = decoder(ninp, nhid, n_out) if decoder is not None else nn.Sequential(nn.Linear(ninp, nhid), GELU(), nn.Linear(nhid, n_out))
         self.input_ln = SeqBN(ninp) if input_normalization else None
         self.style_encoder = style_encoder
         self.init_method = init_method

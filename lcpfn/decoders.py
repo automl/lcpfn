@@ -2,6 +2,12 @@ import torch
 from torch import nn
 import random
 
+from torch import Tensor
+import torch.nn.functional as F
+
+class GELU(nn.Module):
+    def forward(self, input: Tensor) -> Tensor:
+        return F.gelu(input)
 
 class ScaledDecoder(nn.Module):
     def __init__(self, ninp, nhid, nout):
@@ -13,7 +19,7 @@ class ScaledDecoder(nn.Module):
     def forward(self, x):
         #return torch.cat([self.linear1(x), self.linear2(x)], -1)
         x = self.linear(x)
-        x = nn.GELU()(x)
+        x = GELU()(x)
         temps = self.linear2(x).softmax(-1) @ torch.tensor([1.,1.4,1.7,2.,5.,10.,20.,40.,80.,160.], device=x.device)
         if random.random() > .99:
             print(temps.shape,temps[:,:2])

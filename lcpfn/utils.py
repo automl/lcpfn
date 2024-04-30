@@ -256,3 +256,63 @@ def check_compatibility(dl):
         print('`num_outputs` for the DataLoader is deprecated. It is assumed to be 1 from now on.')
         assert dl.num_outputs != 1, "We assume num_outputs to be 1. Instead of the num_ouputs change your loss." \
                                     "We specify the number of classes in the CE loss."
+
+
+def pfn_normalize(lb=torch.tensor(float('-inf')), ub=torch.tensor(float('inf')), soft_lb=0.0, soft_ub=1.0, minimize=False):
+    """
+    LC-PFN curve prior assumes curves to be normalized within the range [0,1] and to be maximized.
+    This function allows to normalize and denormalize data to fit this assumption.
+    
+    Parameters:
+        lb (torch.Tensor): Lower bound of the data.
+        ub (torch.Tensor): Upper bound of the data.
+        soft_lb (float): Soft lower bound for normalization. Default is 0.0.
+        soft_ub (float): Soft upper bound for normalization. Default is 1.0.
+        minimize (bool): If True, the original curve is a minization. Default is False.
+    
+    Returns: Two functions for normalizing and denormalizing the data.
+    """
+    assert(lb <= soft_lb and soft_lb < soft_ub and soft_ub <= ub)
+    # step 1: linearly transform [soft_lb,soft_ub] [-1,1] (where the sigmoid behaves approx linearly)
+    #    2.0/(soft_ub - soft_lb)*(x - soft_lb) - 1.0
+    # step 2: apply a vertically scaled/shifted the sigmoid such that [lb,ub] --> [0,1]
+
+    def cinv(x):
+        return 1-x if minimize else x
+
+    def lin_soft(x):
+        return 2/(soft_ub - soft_lb)*(x - soft_lb)-1
+
+    def lin_soft_inv(y):
+        return (y+1)/2*(soft_ub - soft_lb)+soft_lb
+    
+    try:
+        if torch.exp(-lin_soft(lb)) > 1e300: raise RuntimeError
+        # otherwise overflow causes issues, treat these cases as if the lower bound was -infinite
+        # print(f"WARNING: {lb} --> NINF to avoid overflows ({np.exp(-lin_soft(lb))})")
+    except RuntimeError:
+        lb = torch.tensor(float('-inf'))
+    if torch.isinf(lb) and torch.isinf(ub):
+        return lambda x: cinv(1/(1 + torch.exp(-lin_soft(x)))), lambda y: lin_soft_inv(torch.log(cinv(y)/(1-cinv(y))))
+    elif torch.isinf(lb):
+        a = 1 + torch.exp(-lin_soft(ub))
+        return lambda x: cinv(a/(1 + torch.exp(-lin_soft(x)))), lambda y: lin_soft_inv(torch.log((cinv(y)/a)/(1-(cinv(y)/a))))
+    elif torch.isinf(ub):
+        a = 1/(1-1/(1+torch.exp(-lin_soft(lb))))
+        b = 1-a
+        return lambda x: cinv(a/(1 + torch.exp(-lin_soft(x))) + b), lambda y: lin_soft_inv(torch.log(((cinv(y)-b)/a)/(1-((cinv(y)-b)/a))))
+    else:
+        a = (1 + torch.exp(-lin_soft(ub)) + torch.exp(-lin_soft(lb)) + torch.exp(-lin_soft(ub)-lin_soft(lb))) / (torch.exp(-lin_soft(lb)) - torch.exp(-lin_soft(ub)))
+        b = - a / (1 + torch.exp(-lin_soft(lb)))
+        return lambda x: cinv(a/(1 + torch.exp(-lin_soft(x))) + b), lambda y: lin_soft_inv(torch.log(((cinv(y)-b)/a)/(1-((cinv(y)-b)/a))))
+
+def get_default_normalizer():
+    default_normalizer_kwargs = {
+                "lb": torch.tensor(float('-inf')),
+                "ub": torch.tensor(float('inf')),
+                "soft_lb": 0.0,
+                "soft_ub": 1.0,
+                "minimize": False
+    }
+    return pfn_normalize(**default_normalizer_kwargs)
+    
