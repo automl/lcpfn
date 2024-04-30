@@ -1,7 +1,7 @@
 
 # Efficient Bayesian Learning Curve Extrapolation using Prior-Data Fitted Networks
 
-This repository offers an implementation of LC-PFN, a method designed for efficient Bayesian learning curve extrapolation.
+This repository offers an implementation of [LC-PFN](https://openreview.net/pdf?id=xgTV6rmH6n), a method designed for efficient Bayesian learning curve extrapolation.
 
 **LC-PFN in action on [Google colab](https://colab.research.google.com/drive/1JA2t91xgqZVfjZya41oW5vVQktv_YXhE?usp=sharing) and [HuggingFace](https://huggingface.co/spaces/herilalaina/lcpfn)**
 
@@ -28,7 +28,10 @@ pip install -r requirements.txt
 
 ### Usage
 
-For examples of training an LC-PFN model and using it for inference, check out the `notebooks` directory.
+Try out the `notebooks` directory (requires ``matplotlib``) for training and inference examples.
+
+> **NOTE:**  Our model supports only increasing curves with values in $[0,1]$. If needed, please consider normalizing your curves to meet these constraints. See an example in ``notebooks/curve_normalization.ipynb``.
+
 
 ### Reference
 
