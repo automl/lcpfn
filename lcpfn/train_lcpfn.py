@@ -12,7 +12,7 @@ def train_lcpfn(
     emsize: int = 512,
     nlayers: int = 12,
     num_borders: int = 1000,
-    lr: float = 0.001,
+    lr: float = 0.0001,
     batch_size: int = 100,
     epochs: int = 1000,
 ):
@@ -25,7 +25,7 @@ def train_lcpfn(
         emsize (int, optional): The size of the embedding layer. Defaults to 512.
         nlayers (int, optional): The number of layers in the model. Defaults to 12.
         num_borders_choices (int, optional): The number of borders to use. Defaults to 1000.
-        lr (float, optional): The learning rate for the optimizer. Defaults to 0.001.
+        lr (float, optional): The learning rate for the optimizer. Defaults to 0.0001.
         batch_size (int, optional): The batch size for training. Defaults to 100.
         epochs (int, optional): The number of epochs to train for. Defaults to 1000.
 
