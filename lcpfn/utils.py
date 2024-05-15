@@ -308,11 +308,14 @@ def pfn_normalize(lb=torch.tensor(float('-inf')), ub=torch.tensor(float('inf')),
 
 def get_default_normalizer():
     default_normalizer_kwargs = {
-                "lb": torch.tensor(float('-inf')),
-                "ub": torch.tensor(float('inf')),
+                "lb": torch.tensor(0.0),
+                "ub": torch.tensor(1.0),
                 "soft_lb": 0.0,
                 "soft_ub": 1.0,
                 "minimize": False
     }
     return pfn_normalize(**default_normalizer_kwargs)
     
+
+def identity_normalizer():
+    return lambda x: x, lambda x: x

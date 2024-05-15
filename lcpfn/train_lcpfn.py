@@ -2,9 +2,10 @@ import math
 
 from torch import nn
 
-from lcpfn import bar_distribution, encoders, priors, train
+from lcpfn import bar_distribution, encoders, train
 from lcpfn import utils
 
+from lcpfn.priors import utils as putils
 
 def train_lcpfn(
     get_batch_func,
@@ -36,7 +37,7 @@ def train_lcpfn(
     hps = {}
 
     # PFN training hyperparameters
-    dataloader = priors.utils.get_batch_to_dataloader(get_batch_func)  # type: ignore
+    dataloader = putils.get_batch_to_dataloader(get_batch_func)  # type: ignore
 
     num_features = 1
 
