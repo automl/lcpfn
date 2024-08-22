@@ -5,25 +5,10 @@ This repository offers an implementation of [LC-PFN](https://openreview.net/pdf?
 
 **LC-PFN in action on [Google colab](https://colab.research.google.com/drive/1JA2t91xgqZVfjZya41oW5vVQktv_YXhE?usp=sharing) and [HuggingFace](https://huggingface.co/spaces/herilalaina/lcpfn)**
 
-### Installation
+Installation using pip:
 
-To set up the Python environment and install the necessary dependencies, follow these steps:
-
-1. Create and activate a new Python environment:
-```shell
-conda create -n lcpfn python=3.9
-conda activate lcpfn
-```
-
-2. Clone the repository and navigate into its directory:
 ```bash
-git clone git@github.com:automl/lcpfn.git
-cd lcpfn
-```
-
-3. Install the required packages:
-```bash
-pip install -r requirements.txt
+pip install -U lcpfn
 ```
 
 ### Usage

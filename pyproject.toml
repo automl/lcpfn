@@ -1,7 +1,7 @@
 [project]
 name = "lcpfn"
 description = "In-context Bayesian Learning Curve Extrapolation"
-readme = {file = "README.md", content-type = 'text/markdown'}
+readme = {file = "readme.md", content-type = 'text/markdown'}
 license = {file = "LICENSE"}
 authors = [
     {name = "Steven Adriaensen", email= "adriaens@cs.uni-freiburg.de"},
@@ -12,7 +12,7 @@ authors = [
 requires-python = ">=3.9,<3.12"
 dependencies = [
     "torch<=1.11.0",
-    "numpy>=1.21.2",
+    "numpy>=1.21.2<2.0",
     "requests>=2.23.0"
 ]
 dynamic = ["version"]
