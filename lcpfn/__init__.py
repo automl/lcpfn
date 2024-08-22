@@ -21,7 +21,7 @@ def prepare_models():
                 print("Downloading", os.path.abspath(compressed_weights_path))
                 import requests
 
-                url = f'https://github.com/automl/lcpfn/raw/main/lcpfn/trained_models/{name + ".gz"}'
+                url = f'https://ml.informatik.uni-freiburg.de/research-artifacts/lcpfn/{name + ".gz"}'
                 r = requests.get(url, allow_redirects=True)
                 os.makedirs(os.path.dirname(compressed_weights_path), exist_ok=True)
                 with open(compressed_weights_path, "wb") as f:
