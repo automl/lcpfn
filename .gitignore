@@ -1,5 +1,5 @@
 # Byte-compiled / optimized / DLL files
-lcpfn/trained_models/*.pt
+lcpfn/trained_models/
 __pycache__/
 *.py[cod]
 *$py.class
