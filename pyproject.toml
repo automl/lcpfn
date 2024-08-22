@@ -1,0 +1,42 @@
+[project]
+name = "lcpfn"
+description = "In-context Bayesian Learning Curve Extrapolation"
+readme = {file = "README.md", content-type = 'text/markdown'}
+license = {file = "LICENSE"}
+authors = [
+    {name = "Steven Adriaensen", email= "adriaens@cs.uni-freiburg.de"},
+    {name = "Herilalaina Rakotoarison", email = "rakotoah@cs.uni-freiburg.de"},
+    {name = "Samuel Müller", email = "muellesa@cs.uni-freiburg.de"},
+    {name = "Frank Hutter", email = "fh@cs.uni-freiburg.de"},
+]
+requires-python = ">=3.9,<3.12"
+dependencies = [
+    "torch<=1.11.0",
+    "numpy>=1.21.2",
+    "requests>=2.23.0"
+]
+dynamic = ["version"]
+classifiers = [
+  'Intended Audience :: Science/Research',
+  'License :: OSI Approved :: MIT License',
+  'Programming Language :: Python',
+  'Topic :: Software Development',
+  'Topic :: Scientific/Engineering',
+  'Operating System :: Unix',
+  'Operating System :: MacOS',
+  'Programming Language :: Python :: 3',
+  'Programming Language :: Python :: 3.9',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+]
+
+[project.urls]
+homepage = "https://github.com/automl/lcpfn"
+repository = "https://github.com/automl/lcpfn"
+bugtracker = "https://github.com/automl/lcpfn/issues"
+
+[tool.setuptools.packages.find]
+include = ["lcpfn*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "lcpfn.version.__version__"}
