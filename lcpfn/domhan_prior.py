@@ -58,7 +58,10 @@ def prior_weights(
 
 def sample_from_prior(rng, seq_len=100):
     return sample_prior_comb(
-        rng=rng, seq_len=seq_len, components=["pow3", "ilog2", "janoschek"], distribution="peaked"
+        rng=rng,
+        seq_len=seq_len,
+        components=["pow3", "ilog2", "janoschek"],
+        distribution="peaked",
     )
 
 
@@ -103,7 +106,7 @@ def sample_prior_comb(
         f_priors = {
             "pow3": uniform_prior_pow3,
             "ilog2": uniform_prior_ilog2,
-            "janoschek": uniform_prior_janoschek
+            "janoschek": uniform_prior_janoschek,
         }
     else:
         raise NotImplemented()
@@ -152,6 +155,7 @@ def generate_prior_dataset(n, prior=sample_prior_comb, seed=42):
 
 def create_get_batch_func(prior):
     return partial(get_batch_domhan, prior=prior)
+
 
 # function producing batches for PFN training
 def get_batch_domhan(

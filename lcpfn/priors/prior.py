@@ -4,7 +4,15 @@ from torch.utils.data import DataLoader
 
 class PriorDataLoader(DataLoader, metaclass=ABCMeta):
     @abstractmethod
-    def __init__(self, num_steps, batch_size, eval_pos_seq_len_sampler, seq_len_maximum, device, **kwargs):
+    def __init__(
+        self,
+        num_steps,
+        batch_size,
+        eval_pos_seq_len_sampler,
+        seq_len_maximum,
+        device,
+        **kwargs,
+    ):
         """
 
         :param num_steps: int, first argument, the number of steps to take per epoch, i.e. iteration of the DataLoader

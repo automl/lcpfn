@@ -282,7 +282,6 @@ def train(
     list_losses = []
     try:
         for epoch in range(1, epochs + 1) if epochs is not None else itertools.count(1):
-
             epoch_start_time = time.time()
             (
                 total_loss,

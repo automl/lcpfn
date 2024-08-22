@@ -7,6 +7,7 @@ from lcpfn import utils
 
 from lcpfn.priors import utils as putils
 
+
 def train_lcpfn(
     get_batch_func,
     seq_len: int = 100,
@@ -83,7 +84,9 @@ def train_lcpfn(
         epochs=epochs,
         lr=lr,
         bptt=seq_len,
-        single_eval_pos_gen=utils.get_uniform_single_eval_pos_sampler(seq_len, min_len=1),
+        single_eval_pos_gen=utils.get_uniform_single_eval_pos_sampler(
+            seq_len, min_len=1
+        ),
         aggregate_k_gradients=1,
         nhid=(emsize * 2),
         steps_per_epoch=100,

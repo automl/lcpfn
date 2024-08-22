@@ -36,15 +36,28 @@ class TransformerEncoderLayer(nn.Module):
         >>> src = torch.rand(32, 10, 512)
         >>> out = encoder_layer(src)
     """
-    __constants__ = ['batch_first']
 
-    def __init__(self, d_model, nhead, dim_feedforward=2048, dropout=0.1, activation="relu",
-                 layer_norm_eps=1e-5, batch_first=False, pre_norm=False,
-                 device=None, dtype=None, recompute_attn=False) -> None:
-        factory_kwargs = {'device': device, 'dtype': dtype}
+    __constants__ = ["batch_first"]
+
+    def __init__(
+        self,
+        d_model,
+        nhead,
+        dim_feedforward=2048,
+        dropout=0.1,
+        activation="relu",
+        layer_norm_eps=1e-5,
+        batch_first=False,
+        pre_norm=False,
+        device=None,
+        dtype=None,
+        recompute_attn=False,
+    ) -> None:
+        factory_kwargs = {"device": device, "dtype": dtype}
         super().__init__()
-        self.self_attn = MultiheadAttention(d_model, nhead, dropout=dropout, batch_first=batch_first,
-                                            **factory_kwargs)
+        self.self_attn = MultiheadAttention(
+            d_model, nhead, dropout=dropout, batch_first=batch_first, **factory_kwargs
+        )
         # Implementation of Feedforward model
         self.linear1 = Linear(d_model, dim_feedforward, **factory_kwargs)
         self.dropout = Dropout(dropout)
@@ -60,11 +73,16 @@ class TransformerEncoderLayer(nn.Module):
         self.activation = _get_activation_fn(activation)
 
     def __setstate__(self, state):
-        if 'activation' not in state:
-            state['activation'] = F.relu
+        if "activation" not in state:
+            state["activation"] = F.relu
         super().__setstate__(state)
 
-    def forward(self, src: Tensor, src_mask: Optional[Tensor] = None, src_key_padding_mask: Optional[Tensor] = None) -> Tensor:
+    def forward(
+        self,
+        src: Tensor,
+        src_mask: Optional[Tensor] = None,
+        src_key_padding_mask: Optional[Tensor] = None,
+    ) -> Tensor:
         r"""Pass the input through the encoder layer.
 
         Args:
@@ -90,26 +108,61 @@ class TransformerEncoderLayer(nn.Module):
             num_train_tokens = trainset_src_mask.shape[0]
 
             global_tokens_src = src_[:num_global_tokens]
-            train_tokens_src = src_[num_global_tokens:num_global_tokens+num_train_tokens]
-            global_and_train_tokens_src = src_[:num_global_tokens+num_train_tokens]
-            eval_tokens_src = src_[num_global_tokens+num_train_tokens:]
+            train_tokens_src = src_[
+                num_global_tokens : num_global_tokens + num_train_tokens
+            ]
+            global_and_train_tokens_src = src_[: num_global_tokens + num_train_tokens]
+            eval_tokens_src = src_[num_global_tokens + num_train_tokens :]
 
+            attn = (
+                partial(checkpoint, self.self_attn)
+                if self.recompute_attn
+                else self.self_attn
+            )
 
-            attn = partial(checkpoint, self.self_attn) if self.recompute_attn else self.self_attn
+            global_tokens_src2 = attn(
+                global_tokens_src,
+                global_and_train_tokens_src,
+                global_and_train_tokens_src,
+                None,
+                True,
+                global_src_mask,
+            )[0]
+            train_tokens_src2 = attn(
+                train_tokens_src,
+                global_tokens_src,
+                global_tokens_src,
+                None,
+                True,
+                trainset_src_mask,
+            )[0]
+            eval_tokens_src2 = attn(
+                eval_tokens_src, src_, src_, None, True, valset_src_mask
+            )[0]
 
-            global_tokens_src2 = attn(global_tokens_src, global_and_train_tokens_src, global_and_train_tokens_src, None, True, global_src_mask)[0]
-            train_tokens_src2 = attn(train_tokens_src, global_tokens_src, global_tokens_src, None, True, trainset_src_mask)[0]
-            eval_tokens_src2 = attn(eval_tokens_src, src_, src_,
-                                    None, True, valset_src_mask)[0]
-
-            src2 = torch.cat([global_tokens_src2, train_tokens_src2, eval_tokens_src2], dim=0)
+            src2 = torch.cat(
+                [global_tokens_src2, train_tokens_src2, eval_tokens_src2], dim=0
+            )
 
         else:
             if self.recompute_attn:
-                src2 = checkpoint(self.self_attn, src_, src_, src_, src_key_padding_mask, True, src_mask)[0]
+                src2 = checkpoint(
+                    self.self_attn,
+                    src_,
+                    src_,
+                    src_,
+                    src_key_padding_mask,
+                    True,
+                    src_mask,
+                )[0]
             else:
-                src2 = self.self_attn(src_, src_, src_, attn_mask=src_mask,
-                                      key_padding_mask=src_key_padding_mask)[0]
+                src2 = self.self_attn(
+                    src_,
+                    src_,
+                    src_,
+                    attn_mask=src_mask,
+                    key_padding_mask=src_key_padding_mask,
+                )[0]
         src = src + self.dropout1(src2)
         if not self.pre_norm:
             src = self.norm1(src)
