@@ -11,6 +11,8 @@ Installation using pip:
 pip install -U lcpfn
 ```
 
+> **Update**: there is an inconsistency between the code and the paper regarding the definition of the noise prior. The correct definition is the one used in the code, where $\log(\sigma)$ is defined as $\mathcal{N}(-4, 1)$.
+
 ### Usage
 
 Try out the `notebooks` (require ``matplotlib``) for training and inference examples.

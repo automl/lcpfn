@@ -122,10 +122,11 @@ def sample_prior_comb(
             kwargs = f_priors[f](rng)
             # print(f_components[f](x, **kwargs))
             y += w * f_components[f](x, **kwargs)
-        # add noise (can exceed [0,1], but afaik no way to implement this prior in Tobis work)
-        var = np.exp(
+        # add noise (can exceed [0,1], but afaik no way to implement this prior in Tobias work)
+        # Note: This is the correct definition, but it differs from the noise prior definition in the paper
+        std = np.exp(
             rng.normal(var_lnloc, var_lnscale)
-        )  # @heri: ln_prob =+ log(normal.pdf(log(var), loc=var_lnloc, scale=var_lnscale))
+        )  
 
         # reject any curves that are non-increasing, exceed the [0,1] range
         if (
@@ -138,7 +139,7 @@ def sample_prior_comb(
             break
 
     def curve():  # generates a sample from the same model, but with independent noise
-        y_noisy = y + rng.normal(np.zeros_like(y), var)
+        y_noisy = y + rng.normal(np.zeros_like(y), std)
         return y, y_noisy
 
     return curve
