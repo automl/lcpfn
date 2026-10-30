@@ -1,3 +1,4 @@
+import os
 import torch
 import lcpfn
 import warnings
@@ -5,11 +6,24 @@ from lcpfn import utils
 
 
 class LCPFN(torch.nn.Module):
-    def __init__(self, model_name="EMSIZE512_NLAYERS12_NBUCKETS1000"):
+    def __init__(self, model_name=lcpfn.DEFAULT_MODEL):
+        """Load an LC-PFN.
+
+        `model_name` is either the name of a released variant (see `lcpfn.list_models()`, e.g.
+        "EPOCH1000_EMSIZE512_NLAYERS12_NBUCKETS1000"; it is downloaded on first use) or the path
+        to a local checkpoint file.
+        """
         super(LCPFN, self).__init__()
-        self.model = torch.load(
-            getattr(lcpfn, model_name) if model_name in lcpfn.model_dict else model_name
-        )
+        if model_name in lcpfn.model_dict:
+            weights = lcpfn.download_model(model_name)
+        elif os.path.exists(model_name):
+            weights = model_name
+        else:
+            raise ValueError(
+                f"{model_name!r} is neither a released LC-PFN model nor an existing file. "
+                f"Released models: {', '.join(lcpfn.list_models())}"
+            )
+        self.model = torch.load(weights)
         self.model.eval()
 
     def check_input(self, x_train, x_test, y_train, y_test=None):
