@@ -22,14 +22,13 @@ Try out the `notebooks` (require ``matplotlib``) for training and inference exam
 
 ### Reference
 
-```
-@inproceedings{
-adriaensens2023lcpfn,
-title={Efficient Bayesian Learning Curve Extrapolation using Prior-Data Fitted Networks},
-author={Adriaensen, Steven and Rakotoarison, Herilalaina and Müller, Samuel and Hutter, Frank},
-booktitle={Thirty-seventh Conference on Neural Information Processing Systems},
-year={2023},
-url={https://openreview.net/forum?id=xgTV6rmH6n}
+```bibtex
+@inproceedings{adriaensens2023lcpfn,
+  title={Efficient Bayesian Learning Curve Extrapolation using Prior-Data Fitted Networks},
+  author={Adriaensen, Steven and Rakotoarison, Herilalaina and Müller, Samuel and Hutter, Frank},
+  booktitle={Thirty-seventh Conference on Neural Information Processing Systems},
+  year={2023},
+  url={https://openreview.net/forum?id=xgTV6rmH6n}
 }
 ```
 
